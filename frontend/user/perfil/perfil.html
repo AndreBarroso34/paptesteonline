@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil</title>
+    
+    <!-- Link para o CSS -->
+    <link rel="stylesheet" href="./perfil.css">
+    <!-- import css do header -->
+    <link rel="stylesheet" href="../../HEADER/header.css">
+    <!-- import bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <a href="../paginainicial/paginaInicial.html"  >
+                    <img src="../../IMG/LOGOS/LOGO_WELLDENTYS_SEM_SAUDE_ESTETICA_JPEG copy.png" alt="Logo da " class="logo-welldentys">
+                </a>
+            </div>
+            
+            <nav class="menu">
+                <nav class="menu-primario">
+                    <a href="../paginainicial/paginainicial.html">Página Inicial</a>
+                    <a href="../marcarconsulta/checklogin.html">Consultas</a>
+                    <a href="../perfil/perfil.html">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                </nav>
+            </nav>
+        </header>
+        <!-- Adicionar o ID 'app' para o Vue funcionar -->
+        <div class="perfil" id="app">
+            <h2>{{ userName }}</h2>
+            
+            <div class="logout">
+                <button class="btn btn-primary" @click="logout">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script> <!-- Vue.js -->
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                userName: '',  // Nome do utilizador (recuperado do login)
+            },
+            created() {
+                // Recupera o nome do utilizador após login
+                this.userName = localStorage.getItem('userName');
+                if (!this.userName) {
+                    window.location.href = '../../login/login.html';  // Redireciona se não houver nome de utilizador
+                }
+            },
+            methods: {
+                logout() {
+                    // Remove os dados do utilizador do localStorage
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('email');
+                    localStorage.removeItem('password');
+                    localStorage.removeItem('telefone');
+                    // Redireciona para a página de login
+                    window.location.href = '../../login/login.html';
+                },
+            },
+        });
+    </script>
+</body>
+</html>

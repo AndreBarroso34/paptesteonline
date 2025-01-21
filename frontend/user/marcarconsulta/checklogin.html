@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcar consulta</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <link rel="stylesheet" href="corpo.css">
+    <!-- import css do header -->
+    <link rel="stylesheet" href="../../HEADER/header.css">
+</head>
+<body>
+    <div class="countainer">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <a href="../paginainicial/paginaInicial.html">
+                    <img src="../../IMG/LOGOS/LOGO_WELLDENTYS_SEM_SAUDE_ESTETICA_JPEG copy.png" alt="Logo da " class="logo-welldentys">
+                </a>
+            </div>
+            
+            <nav class="menu">
+                <nav class="menu-primario">
+                    <a href="../paginainicial/paginainicial.html">Página Inicial</a>
+                    <a href="#" class="select">Consultas</a>
+                    <a href="../perfil/perfil.html">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                </nav>
+            </nav>
+        </header>
+        <div id="app">
+            <div class="container mt-5">
+                <h2>Marcar consulta</h2>
+    
+                <form @submit.prevent="nextPage">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nome</label>
+                        <input type="text" class="form-control" id="name" v-model="userName" readonly>
+                    </div>
+    
+                    <div class="mb-3">
+                        <label for="typeOfConsultation" class="form-label">Tipo de Consulta</label>
+                        <select class="form-control" id="typeOfConsultation" v-model="typeOfConsultation">
+                            <option value="Consulta geral">Consulta geral</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Campo de Email -->
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email" v-model="email" readonly>
+                    </div>
+
+                    <!-- Campo de Telefone -->
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Telefone</label>
+                        <input type="tel" class="form-control" id="phone" v-model="telefone" required readonly>
+                    </div>
+
+                    <!-- Campo de Seguro -->
+                    <div class="mb-3">
+                        <label for="insurance" class="form-label">Seguro</label>
+                        <select class="form-control" id="insurance" v-model="insurance" required>
+                            <option value="" disabled selected>Escolha um seguro</option> <!-- Opção default -->
+                            <option value="Particular">Particular</option>
+                            <option value="Médis">Médis</option>
+                            <option value="Cheque dentista">Cheque dentista</option>
+                            <option value="Caixa deral depósito">Caixa Geral de Depósitos</option>
+                        </select>
+                    </div>
+                    
+
+                    <button type="button" class="btn btn-primary" @click="nextPage">Seguinte</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                userName: '',  // Nome do utilizador (recuperado do login)
+                typeOfConsultation: 'Consulta geral',  // Tipo de consulta selecionado
+                email: '',  // E-mail do cliente
+                telefone: '',  // Telefone do cliente (atualizado para corresponder ao nome da chave do localStorage)
+                insurance: 'Particular'  // Inicializa com a opção "Particular"
+            },
+            created() {
+                // Recupera os dados do utilizador após login
+                this.userName = localStorage.getItem('userName');
+                this.email = localStorage.getItem('email');
+                this.telefone = localStorage.getItem('telefone'); // Recupera o telefone do localStorage
+
+                // Verificar se o telefone foi recuperado corretamente
+                console.log("Telefone recuperado do localStorage:", this.telefone);
+
+                // Se o telefone não estiver disponível, pode ser ajustado para uma string vazia
+                if (!this.telefone || this.telefone === 'undefined') {
+                    this.telefone = '';  // Garantir que o telefone não seja undefined
+                }
+
+                // Se o nome de utilizador não estiver presente, redireciona para o login
+                if (!this.userName) {
+                    window.location.href = '../../login/login.html';  // Redireciona se não houver nome de utilizador
+                }
+            },
+            methods: {
+                nextPage() {
+                    // Armazena os dados de consulta no localStorage
+                    localStorage.setItem('typeOfConsultation', this.typeOfConsultation);
+                    localStorage.setItem('email', this.email);  // Armazena o email
+                    localStorage.setItem('telefone', this.telefone);  // Armazena o telefone com a chave 'telefone'
+                    localStorage.setItem('insurance', this.insurance);  // Agora insurance é uma string, sem necessidade de join
+
+                    // Redireciona para a próxima página
+                    window.location.href = 'checklogin2.html';  // Aqui você pode colocar a URL da próxima página
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="signup.css">
+    <title>SignUp</title>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:;">
+        <div class="logo">
+            <a href="../paginainicial/paginaInicial.html"  >
+                <img src="../IMG/LOGOS/LOGO_WELLDENTYS_SEM_SAUDE_ESTETICA_JPEG copy.png" alt="Logo da Welldentys" class="logo-welldentys">
+            </a>
+        </div>
+    </header>
+    <div class="countainer" id="countainer">
+        <div class="formularios" id="formulario">
+            <div class="img-logo">
+                <a href="../index.html">
+                    <img src="../../IMG/LOGOS/folha-logo.png" alt="" class="folha-logo">  
+                </a>
+            </div>
+            <div class="titulo">
+                <h1>Sign Up</h1>
+            </div>
+            <div class="formulario" id="vue-signup2">
+                <div class="form">
+                    <p>Insira sua data de nascimento</p>
+                    <input type="date" v-model="dataNascimento" required class="input">
+
+                    <p>Insira o seu número de telefone</p>
+                    <input type="tel" v-model="telefone" required class="input">
+
+                    <div class="btn-login">
+                        <a class="login-btn" @click.prevent="goToNextPage">Continuar</a>
+                    </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+
+    <script>
+        new Vue({
+            el: '#vue-signup2',
+            data: {
+                dataNascimento: '',
+                telefone: ''
+            },
+            methods: {
+                goToNextPage() {
+                    // Verifique se os campos obrigatórios estão preenchidos
+                    if (!this.dataNascimento || !this.telefone) {
+                        alert('Por favor, preencha todos os campos.');
+                        return;
+                    }
+
+                    // Salvar os dados do formulário no localStorage para envio posterior
+                    localStorage.setItem('data_nascimento', this.dataNascimento);
+                    localStorage.setItem('telefone', this.telefone);
+
+                    // Redirecionar para a próxima página
+                    window.location.href = 'signup3.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+    
+
+

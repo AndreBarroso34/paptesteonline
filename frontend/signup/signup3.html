@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="signup.css">
+    <title>SignUp</title>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' data:;">
+        <div class="logo">
+            <a href="../paginainicial/paginaInicial.html"  >
+                <img src="../IMG/LOGOS/LOGO_WELLDENTYS_SEM_SAUDE_ESTETICA_JPEG copy.png" alt="Logo da Welldentys" class="logo-welldentys">
+            </a>
+        </div>
+    </header>
+    <div class="countainer" id="countainer">
+        <div class="formularios" id="formulario">
+            <div class="img-logo">
+                <a href="../index.html">
+                    <img src="../../IMG/LOGOS/folha-logo.png" alt="" class="folha-logo">  
+                </a>
+            </div>
+            <div class="titulo">
+                <h1>Sign Up</h1>
+            </div>
+            <div class="formulario">
+                <div class="form">
+                    <p>Insira uma palavra-passe</p>
+                    <input type="password" v-model="password" placeholder="Password" required class="input">
+                    
+                    <p>Confirme a palavra-passe</p>
+                    <input type="password" v-model="confirmPassword" placeholder="Confirmar Password" required class="input">
+                    
+                    <div class="btn-login">
+                        <a class="login-btn" @click.prevent="submitForm">Concluir</a>
+                    </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+
+    <script>
+        new Vue({
+            el: '#formulario',
+            data: {
+                password: '',
+                confirmPassword: ''
+            },
+            methods: {
+                submitForm() {
+                    // Verificar se as senhas coincidem
+                    if (this.password === this.confirmPassword) {
+                        // Recuperar todos os dados do localStorage
+                        const nome = localStorage.getItem('nome');
+                        const sobrenomes = localStorage.getItem('sobrenomes');
+                        const email = localStorage.getItem('email');
+                        const dataNascimento = localStorage.getItem('data_nascimento');
+                        const telefone = localStorage.getItem('telefone');
+                        const pass = this.password;
+    
+                        // Verificar se algum dado está faltando
+                        if (!nome || !sobrenomes || !email || !dataNascimento || !telefone || !pass) {
+                            alert('Todos os campos são obrigatórios!');
+                            return;
+                        }
+    
+                        // Enviar os dados para o backend
+                        fetch('http://localhost:3001/signup', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                nome: nome,
+                                sobrenomes: sobrenomes,
+                                email: email,
+                                dataNascimento: dataNascimento,
+                                telefone: telefone,
+                                pass: pass
+                            }),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Resposta do servidor:', data);
+                            if (data.success) {
+                                // Limpar os dados do localStorage após o envio bem-sucedido
+                                localStorage.removeItem('nome');
+                                localStorage.removeItem('sobrenomes');
+                                localStorage.removeItem('email');
+                                localStorage.removeItem('data_nascimento');
+                                localStorage.removeItem('telefone');
+
+                                alert('Conta criada com sucesso!');
+                                window.location.href = '../login/login.html';
+                            } else {
+                                alert('Erro ao criar conta: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro ao enviar dados:', error);
+                            alert('Erro ao criar conta: ' + error.message);
+                        });
+                    } else {
+                        alert('A palavra-pass não são iguais!');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

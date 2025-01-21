@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcar consulta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <!-- import do css do calendario -->
+    <link rel="stylesheet" href="calendario.css">
+     <!-- import bootstrap -->
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+     <!-- import css do header -->
+     <link rel="stylesheet" href="../../HEADER/header.css">
+     <!-- import corpo  -->
+      <link rel="stylesheet" href="corpo.css">
+</head>
+<body>
+    <div class="countainer">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <a href="../paginainicial/paginaInicial.html">
+                    <img src="../../IMG/LOGOS/LOGO_WELLDENTYS_SEM_SAUDE_ESTETICA_JPEG copy.png" alt="Logo da " class="logo-welldentys">
+                </a>
+            </div>
+            
+            <nav class="menu">
+                <nav class="menu-primario">
+                    <a href="../paginainicial/paginainicial.html">Página Inicial</a>
+                    <a href="#" class="select">Consultas</a>
+                    <a href="../perfil/perfil.html">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                </nav>
+            </nav>
+        </header>
+        <div class="container mt-5" id="app">
+            <div class="mb-3">
+                <label for="year-select" class="form-label">Selecione o Ano</label>
+                <select id="year-select" class="form-control" v-model="selectedYear" @change="populateDays">
+                    <option v-for="year in yearOptions" :key="year" :value="year">{{ year }}</option>
+                </select>
+            </div>
+    
+            <div>
+                <button class="btn btn-primary mb-3" @click="showCalendar = !showCalendar">
+                    {{ showCalendar ? 'Esconder Calendário' : 'Mostrar Calendário' }}
+                </button>
+            </div>
+    
+            <div v-if="!showCalendar" class="input-container">
+                <input type="text" class="form-control" :value="selectedDay || 'Selecione um dia'" readonly>
+            </div>
+    
+            <div v-if="showCalendar">
+                <div class="month-nav">
+                    <button class="btn btn-secondary" @click="previousMonth">&#60;</button>
+    
+                    <select v-model="selectedMonth" @change="populateDays">
+                        <option v-for="(month, index) in months" :key="index" :value="index + 1">
+                            {{ month }}
+                        </option>
+                    </select>
+    
+                    <button class="btn btn-secondary" @click="nextMonth">&#62;</button>
+                </div>
+    
+                <div class="weekdays">
+                    <div>S</div>
+                    <div>T</div>
+                    <div>Q</div>
+                    <div>Q</div>
+                    <div>S</div>
+                    <div>S</div>
+                    <div>D</div>
+                </div>
+    
+                <div class="calendar">
+                    <div v-for="(day, index) in daysInMonth" :key="index"
+                        :class="['day', { selected: selectedDay === day.date, disabled: day.isDisabled }]"
+                        @click="!day.isDisabled && selectDay(day)">
+                        {{ day.day }}
+                    </div>
+                </div>
+    
+                <div class="input-container mt-3">
+                    <input type="text" class="form-control" :value="selectedDay || 'Selecione um dia'" readonly>
+                </div>
+    
+                <div v-if="selectedDay" class="time-section">
+                    <div class="section-title">Manhã</div>
+                    <div class="time-buttons">
+                        <button v-for="time in customMorningTimes" :key="time" class="btn btn-secondary" 
+                            :class="{ active: selectedTime === time, disabled: occupiedTimes.includes(time) }" 
+                            @click="selectTime(time)" :disabled="occupiedTimes.includes(time)">
+                            {{ time }}
+                        </button>
+                    </div>
+    
+                    <div class="section-title">Tarde</div>
+                    <div class="time-buttons">
+                        <button v-for="time in customAfternoonTimes" :key="time" class="btn btn-secondary" 
+                            :class="{ active: selectedTime === time, disabled: occupiedTimes.includes(time) }" 
+                            @click="selectTime(time)" :disabled="occupiedTimes.includes(time)">
+                            {{ time }}
+                        </button>
+                    </div>
+                </div>
+    
+                <div v-if="selectedDay && selectedTime" class="mt-3 text-center">
+                    <button class="btn btn-success" @click="confirmAppointment">
+                        Pedir Consulta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                showCalendar: false,
+                selectedDay: '',
+                selectedTime: '',
+                selectedMonth: new Date().getMonth() + 1,
+                selectedYear: new Date().getFullYear(),
+                yearOptions: [],
+                months: [
+                    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+                ],
+                daysInMonth: [],
+                customMorningTimes: [],
+                customAfternoonTimes: [],
+                occupiedTimes: [], // Armazena os horários ocupados para o dia selecionado
+                email: '',  // Adicionando email
+                telefone: '',  // Adicionando telefone
+                seguro: ''  // Adicionando seguro
+            },
+            created() {
+                // Recupera os dados do localStorage
+                this.email = localStorage.getItem('email');
+                this.telefone = localStorage.getItem('telefone');
+                this.seguro = localStorage.getItem('insurance');  // Pode ser um array, por isso precisamos de join()
+                // Garante que o seguro está em formato de string
+                if (Array.isArray(this.seguro)) {
+                    this.seguro = this.seguro.join(', ');
+                }
+                
+                
+
+                // se não houver email de utilizador redirenciona para o login
+                if (!this.email) {
+                    window.location.href = '../../login/login.html';  
+                }
+                
+                this.populateYears();
+                this.populateDays();
+                this.generateTimeSlots();
+                this.checkOccupiedTimes(); // Verificar os horários ocupados ao inicializar
+            },
+            methods: {
+                selectDay(day) {
+                    this.selectedDay = day.date;
+                    this.selectedTime = ''; // Reset time selection on new day
+                    this.checkOccupiedTimes(); // Verifica os horários ocupados para o novo dia
+                },
+                selectTime(time) {
+                    this.selectedTime = time;
+                },
+                // Função para confirmar a consulta e enviar os dados ao servidor
+                async confirmAppointment() {
+                    const userName = localStorage.getItem('userName') || 'Desconhecido';
+                    const typeOfConsultation = localStorage.getItem('typeOfConsultation') || 'Não especificado';
+                    
+                    // Remover a letra 'H' do valor da hora
+                    const horaConsulta = this.selectedTime.replace('H', '');
+            
+                    const dataToSend = {
+                        nome_paciente: userName,
+                        tipo_consulta: typeOfConsultation,
+                        data_consulta: this.selectedDay,
+                        hora_consulta: horaConsulta, // Hora sem o 'H'
+                        email: this.email,  // Dados do email
+                        telefone: this.telefone,  // Dados do telefone
+                        seguro: this.seguro  // Dados do seguro
+                    };
+            
+                    console.log('Enviando dados para o servidor:', dataToSend); // Verifique se os dados estão corretos
+            
+                    try {
+                        const response = await fetch('http://localhost:3001/pedidos', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(dataToSend)
+                        });
+            
+                        if (response.ok) {
+                            alert('Consulta confirmada!');
+                        } else {
+                            alert('Erro ao confirmar consulta!');
+                        }
+                    } catch (error) {
+                        console.error('Erro de comunicação:', error);
+                        alert('Erro de comunicação com o servidor.');
+                    }
+                },
+                populateYears() {
+                    const currentYear = new Date().getFullYear();
+                    this.yearOptions = Array.from({ length: 21 }, (_, i) => currentYear + i);
+                },
+                populateDays() {
+                    const daysInMonth = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
+                    const firstDayOfWeek = new Date(this.selectedYear, this.selectedMonth - 1, 1).getDay(); // Primeiro dia do mês
+                    const today = new Date().toISOString().split('T')[0];
+
+                    // Ajustar para que o primeiro dia corresponda ao índice de segunda-feira
+                    const startOffset = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1; 
+
+                    this.daysInMonth = [];
+
+                    // Preencher dias em branco para o início do calendário
+                    for (let i = 0; i < startOffset; i++) {
+                        this.daysInMonth.push({ day: '', date: '', isDisabled: true });
+                    }
+
+                    // Preencher os dias reais do mês
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const date = `${this.selectedYear}-${String(this.selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        const dayOfWeek = new Date(this.selectedYear, this.selectedMonth - 1, day).getDay(); // Dia da semana para o dia atual
+                        
+                        // Desabilitar os domingos
+                        const isSunday = dayOfWeek === 0;
+
+                        this.daysInMonth.push({
+                            day,
+                            date,
+                            isDisabled: date < today || isSunday // Bloquear os domingos
+                        });
+                    }
+                },
+                previousMonth() {
+                    if (this.selectedMonth > 1) {
+                        this.selectedMonth--;
+                    } else {
+                        this.selectedMonth = 12; // Volta para dezembro
+                        this.selectedYear--;   // Retrocede para o ano anterior
+                    }
+                    this.populateDays();
+                    this.checkOccupiedTimes(); // Atualiza os horários ocupados ao navegar entre os meses
+                },
+                nextMonth() {
+                    if (this.selectedMonth < 12) {
+                        this.selectedMonth++;
+                    } else {
+                        this.selectedMonth = 1; // Volta para o primeiro mês
+                        this.selectedYear++;   // Avança para o próximo ano
+                    }
+                    this.populateDays();
+                    this.checkOccupiedTimes(); // Atualiza os horários ocupados ao navegar entre os meses
+                },
+                generateTimeSlots() {
+                    this.customMorningTimes = this.generateSlots('09:00', '11:30');
+                    this.customAfternoonTimes = this.generateSlots('14:00', '19:30');
+                },
+                generateSlots(start, end) {
+                    const startTime = new Date(`1970-01-01T${start}:00`);
+                    const endTime = new Date(`1970-01-01T${end}:00`);
+                    const slots = [];
+            
+                    while (startTime <= endTime) {
+                        slots.push(startTime.toTimeString().slice(0, 5) + 'H');
+                        startTime.setMinutes(startTime.getMinutes() + 30);
+                    }
+                    return slots;
+                },
+                // Função que verifica os horários ocupados no dia selecionado
+                async checkOccupiedTimes() {
+                    if (!this.selectedDay) return;
+    
+                    try {
+                        const response = await fetch(`http://localhost:3001/pedidos?data_consulta=${this.selectedDay}`);
+                        const data = await response.json();
+    
+                        this.occupiedTimes = data.map(item => item.hora_consulta);
+                    } catch (error) {
+                        console.error('Erro ao buscar horários ocupados:', error);
+                    }
+                }
+            }
+        });
+    </script>
+    
+</body>
+</html>
+
+
+
+
+
+
+

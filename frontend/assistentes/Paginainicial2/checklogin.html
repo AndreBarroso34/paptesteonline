@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda Médica</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <link rel="stylesheet" href="../../HEADER/header.css">
+    <link rel="stylesheet" href="consultas.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <a href="../Paginainicial/paginainicial.html">
+                    <img src="../../IMG/LOGOS/LOGO_WELLDENTYS_SEM_SAUDE_ESTETICA_JPEG copy.png" alt="Logo da " class="logo-welldentys">
+                </a>
+            </div>
+            
+            <nav class="menu">
+                <nav class="menu-primario">
+                    <a href="../Paginainicial/paginainicial.html">Página Inicial</a>
+                    <a href="checklogin.html" class="select">Consultas</a>
+                    <a href="../Perfil/perfil.html">
+                        <i class="bi bi-person-circle"></i>
+                    </a>
+                </nav>
+            </nav>
+        </header>
+        
+        <!-- Verifica se o médico está logado (doctorName)-->
+        <div v-if="assisName">
+            <div class="header">
+                <div>
+                    <button class="btn btn-success">Marcar Consulta</button>
+                    <button class="btn btn-warning" @click="showRequests = !showRequests"><i class="bi bi-bell-fill"></i></button>
+                </div>
+                <div>
+                    <label for="doctor-select">Selecione o Médico:</label>
+                    <select id="doctor-select" v-model="selectedDoctor" @change="loadSchedule">
+                        <option v-for="doctor in doctors" :key="doctor.id" :value="doctor">{{ doctor.nome }}</option>
+                    </select>
+                    <!-- Exibe o campo de data somente quando um médico é selecionado -->
+                    <input type="date" id="consulta-date" v-if="selectedDoctor" v-model="selectedDate" @change="enableSearchButton">
+                    
+                    <!-- Botão de procurar aparece somente quando a data é selecionada -->
+                    <button class="btn btn-primary mt-2" v-if="showSearchButton" @click="searchAppointments">Procurar</button>
+                </div>
+            </div>
+
+            <!-- Exibe os pedidos quando showRequests for true -->
+            <div v-if="showRequests && requests.length > 0">
+                <h4>Pedidos de Consulta</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nome do Cliente</th>
+                            <th>Tipo de Consulta</th>
+                            <th>Data</th>
+                            <th>Hora</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(request, index) in requests" :key="index">
+                            <td>{{ request.nome_paciente || 'Nome não disponível' }}</td>
+                            <td>{{ request.tipo_consulta || 'Tipo não disponível' }}</td>
+                            <td>{{ request.data_consulta || 'Data não disponível' }}</td>
+                            <td>{{ request.hora_consulta || 'Hora não disponível' }}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm" @click="marcarConsulta(index)">Marcar Consulta</button>
+                                <button class="btn btn-danger btn-sm" @click="desmarcarPedidoConsulta(index)">Desmarcar Consulta</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div v-else-if="showRequests">
+                <p class="text-danger">Não há pedidos de consulta disponíveis no momento.</p>
+            </div>
+        
+            <!-- Formulário para detalhes da consulta -->
+            <div v-if="selectedRequest">
+                <h4>Detalhes da Consulta</h4>
+                <form @submit.prevent="confirmarMarcacao">
+                    <div class="mb-3">
+                        <label for="client-name" class="form-label">Nome do Cliente</label>
+                        <input type="text" class="form-control" id="client-name" v-model="selectedRequest.nome_cliente" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="consultation-type" class="form-label">Tipo de Consulta</label>
+                        <input type="text" class="form-control" id="consultation-type" v-model="selectedRequest.tipo_consulta" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="client-email" class="form-label">E-mail do Cliente</label>
+                        <input type="text" class="form-control" id="client-email" v-model="selectedRequest.email" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="client-phone" class="form-label">Telefone do Cliente</label>
+                        <input type="text" class="form-control" id="client-phone" v-model="selectedRequest.telefone" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="insurance" class="form-label">Seguro</label>
+                        <input type="text" class="form-control" id="insurance" v-model="selectedRequest.seguro" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="consultation-date" class="form-label">Data</label>
+                        <input type="text" class="form-control" id="consultation-date" v-model="selectedRequest.data" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="consultation-time" class="form-label">Hora</label>
+                        <input type="text" class="form-control" id="consultation-time" v-model="selectedRequest.hora" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label for="doctor-select" class="form-label">Selecione o Médico</label>
+                        <select id="doctor-select" v-model="selectedDoctor" class="form-control">
+                            <option v-for="doctor in doctors" :key="doctor.id" :value="doctor">{{ doctor.nome }}</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" >Confirmar Marcação</button>
+                    <button type="button" class="btn btn-secondary" @click="toggleDetails">Ocultar</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabela de consultas -->
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Hora</th>
+                    <th>Paciente</th>
+                    <th>Seguro</th>
+                    <th>Telefone</th>
+                    <th>Email</th>
+                    <th>Médico</th>
+                    <th>Tipo de Consulta</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-if="schedule.length === 0">
+                    <td colspan="7" class="text-center">Ainda não há consultas marcadas</td>
+                </tr>
+                
+                <tr v-for="(appointment, index) in schedule" :key="index">
+                    <td>{{ appointment.time }}</td>
+                    <td>{{ appointment.patient }}</td>
+                    <td>{{ appointment.insurance }}</td>
+                    <td>{{ appointment.phone }}</td>
+                    <td>{{ appointment.email }}</td>
+                    <td>{{ appointment.doctorName }}</td>
+                    <td>{{ appointment.typeOfConsultation }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                assisName: '',
+                selectedDoctor: '',
+                selectedDate: '',
+                selectedRequest: null,
+                showRequests: false,
+                showSearchButton: false,
+                doctors: [],
+                requests: [],
+                schedule: []
+            },
+            created() {
+                this.assisName = localStorage.getItem('userName');
+                if (!this.assisName) {
+                    window.location.href = '../../login/login.html';
+                }
+
+                this.fetchDoctors();
+                this.fetchRequests();
+            },
+            methods: {
+                fetchDoctors() {
+                    fetch('http://localhost:3001/medicos')
+                        .then(response => response.json())
+                        .then(data => {
+                            this.doctors = data.map(doctor => ({
+                                id: doctor.id,
+                                nome: doctor.nome
+                            }));
+                        });
+                },
+                fetchRequests() {
+                    fetch('http://localhost:3001/pedidos')
+                        .then(response => response.json())
+                        .then(data => {
+                            this.requests = data.map(request => ({
+                                nome_paciente: request.nome_paciente,
+                                tipo_consulta: request.tipo_consulta,
+                                data_consulta: this.formatDate(request.data_consulta), // Formatando a data
+                                hora_consulta: request.hora_consulta,
+                                email: request.email,
+                                telefone: request.telefone,
+                                seguro: request.seguro
+                            }));
+                        });
+                },
+                formatDate(dateString) {
+                    if (!dateString) return null;
+
+                    // Se a data for do tipo string ISO 8601, converta-a corretamente
+                    const date = new Date(dateString);
+                    if (isNaN(date)) return dateString;  // Se a data for inválida, retorna a data original
+
+                    // Formata a data no formato 'dd/mm/yyyy'
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+
+                    return `${day}/${month}/${year}`;
+                },
+
+                loadSchedule() {
+                    if (this.selectedDoctor && this.selectedDate) {
+                        this.showSearchButton = true;
+                    } else {
+                        this.showSearchButton = false;
+                    }
+                },
+                enableSearchButton() {
+                    this.showSearchButton = !!this.selectedDate;
+                },
+                searchAppointments() {
+                    fetch(`http://localhost:3001/consultas?medico=${this.selectedDoctor.id}&data=${this.selectedDate}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.schedule = data;
+                        });
+                },
+                toggleDetails() {
+                    this.selectedRequest = null;
+                },
+                marcarConsulta(index) {
+                    this.selectedRequest = {
+                        nome_cliente: this.requests[index].nome_paciente,
+                        tipo_consulta: this.requests[index].tipo_consulta,
+                        email: this.requests[index].email,
+                        telefone: this.requests[index].telefone,
+                        seguro: this.requests[index].seguro,
+                        data: this.requests[index].data_consulta,
+                        hora: this.requests[index].hora_consulta
+                    };
+                },
+                confirmarMarcacao() {
+                    if (!this.selectedRequest || !this.selectedDoctor) {
+                        alert('Por favor, selecione todos os campos necessários.');
+                        return;
+                    }
+
+                    const dadosConsulta = {
+                        nome_paciente: this.selectedRequest.nome_cliente,
+                        tipo_consulta: this.selectedRequest.tipo_consulta,
+                        nome_medico: this.selectedDoctor.nome,
+                        email: this.selectedRequest.email,
+                        telefone: this.selectedRequest.telefone,
+                        data: this.selectedRequest.data,
+                        hora: this.selectedRequest.hora
+                    };
+
+                    fetch('http://localhost:3001/horarios', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dadosConsulta)
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Consulta marcada com sucesso!');
+                                return this.excluirPedido();
+                            } else {
+                                alert('Erro ao confirmar a consulta.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro no servidor:', error);
+                            alert('Erro ao processar a solicitação.');
+                        });
+                },
+
+                excluirPedido() {
+                    if (!this.selectedRequest || !this.selectedRequest.data || !this.selectedRequest.hora || !this.selectedRequest.nome_cliente) {
+                        alert('Data, hora ou nome do paciente inválidos.');
+                        return;
+                    }
+
+                    fetch('http://localhost:3001/delete/pedidos', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            nome_cliente: this.selectedRequest.nome_cliente, // Nome do paciente
+                            data_consulta: this.selectedRequest.data, // Data da consulta
+                            hora_consulta: this.selectedRequest.hora, // Hora da consulta
+                        }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert('Pedido excluído com sucesso!');
+                                this.fetchRequests(); // Atualiza a lista de pedidos após a exclusão
+                                this.selectedRequest = null;
+                            } else {
+                                alert(data.message || 'Erro ao excluir o pedido.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro ao excluir pedido:', error);
+                            alert('Erro no servidor ao excluir pedido.');
+                        });
+                },
+
+
+                
+
+                desmarcarPedidoConsulta(index) {
+                    const pedido = this.requests[index];
+                    
+                    if (!pedido || !pedido.data_consulta || !pedido.hora_consulta || !pedido.nome_paciente) {
+                        alert('Pedido inválido para exclusão.');
+                        return;
+                    }
+
+                    fetch('http://localhost:3001/delete/pedidos', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            nome_cliente: pedido.nome_paciente, // Nome do paciente
+                            data_consulta: pedido.data_consulta, // Data da consulta
+                            hora_consulta: pedido.hora_consulta, // Hora da consulta
+                        }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Pedido de consulta desmarcado com sucesso!');
+                            this.fetchRequests(); // Atualiza a lista de pedidos após a exclusão
+                        } else {
+                            alert(data.message || 'Erro ao desmarcar pedido.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao desmarcar pedido:', error);
+                        alert('Erro no servidor ao desmarcar pedido.');
+                    });
+                },
+                searchAppointments() {
+                    fetch(`http://localhost:3001/consultas?medico=${this.selectedDoctor.id}&data=${this.selectedDate}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Verifica se a resposta tem os dados esperados
+                            if (Array.isArray(data)) {
+                                this.schedule = data.map(appointment => ({
+                                    time: appointment.hora,  // Ajuste para o nome do campo que sua API retorna
+                                    patient: appointment.nome_paciente,  // Ajuste conforme os campos da API
+                                    insurance: appointment.seguro,
+                                    phone: appointment.telefone,
+                                    email: appointment.email,
+                                    doctorName: appointment.nome_medico,
+                                    typeOfConsultation: appointment.tipo_consulta
+                                }));
+                            } else {
+                                alert('Nenhum horário encontrado para esta data.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Erro ao buscar os horários:', error);
+                            alert('Erro ao buscar os horários. Tente novamente.');
+                        });
+                }
+
+
+            }
+
+        });
+    </script>
+</body>
+</html>
+
+
+

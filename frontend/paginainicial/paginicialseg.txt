@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empresa - Página Inicial</title>
+    <!-- Link do css da pagina inicial -->
+    <link rel="stylesheet" href="paginainicial.css">
+
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <a href="../paginainicial/paginaInicial.html"  >
+                    <img src="../IMG/LOGOS/LOGO_WELLDENTYS_SEM_SAUDE_ESTETICA_JPEG copy.png" alt="Logo da " class="logo-welldentys">
+                </a>
+            </div>
+            
+            <nav class="menu">
+                <nav class="menu-primario">
+                    <a href="#">Página Inicial</a>
+                    <a href="#"></a>
+                </nav>
+                <nav class="menu-secondario">
+                    <a href="../login/login.html">login</a>
+                    <div class="btns-header">
+                        <button class="btn btn-secondary" onclick="window.location.href='../signup/signup.html'">Sing Up</button>
+                    </div>
+                </nav>
+                
+                
+            </nav>
+        </header>
+        
+
+        <!-- Main content -->
+        <main class="main-content">
+            <div class="text-content">
+                <h1>
+                    Bem-vindo à
+                    <span class="company-name">Welldentys</span>
+                </h1>
+                <div class="botaomarcar">
+                    <button class="btn btn-primary" onclick="window.location.href='../login/login.html'">Marcar consulta</button>
+                </div>
+                
+            </div>
+            
+            <div class="illustration">
+                <div class="sky">
+                    <div class="cloud cloud-1"></div>
+                    <div class="cloud cloud-2"></div>
+                </div>
+                <div class="hills"></div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

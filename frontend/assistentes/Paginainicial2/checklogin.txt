@@ -1,0 +1,44 @@
+codigo anterior para aparecer o nome da pessoa
+<script>
+    // Recupera os parâmetros da URL, como nome e email, usando a classe URLSearchParams
+    const urlParams = new URLSearchParams(window.location.search);  // Cria um objeto para acessar os parâmetros da URL
+
+    // Recupera o valor do parâmetro 'nome' da URL
+    const userName = urlParams.get('nome');  // Armazena o nome do utilizador enviado na URL
+
+    // Recupera o valor do parâmetro 'email' da URL
+    const userEmail = urlParams.get('email');  // Armazena o email do utilizador enviado na URL
+
+    // Exibe o nome na página, caso o nome tenha sido passado na URL
+    if (userName) {  // Verifica se o parâmetro 'nome' existe na URL
+        document.getElementById('user-name').innerText = userName;  // Se 'nome' existir, exibe-o no elemento com id 'user-name'
+    } else {  // Se 'nome' não existir na URL
+        document.getElementById('user-name').innerText = 'Utilizador desconhecido';  // Exibe 'Utilizador desconhecido' no lugar do nome
+    }
+</script>
+
+
+
+
+
+
+
+
+
+marcarConsulta(index) {
+                    this.selectedRequest = this.requests[index];
+                },
+                confirmarMarcacao() {
+                    alert('Consulta marcada!');
+                    this.selectedRequest = null;
+                    this.showRequests = false;
+                    this.fetchRequests();
+                    this.loadSchedule();
+                },
+                desmarcarConsulta(index) {
+                    this.requests.splice(index, 1);
+                    alert('Consulta desmarcada!');
+                },
+                toggleDetails() {
+                    this.selectedRequest = null;
+                }

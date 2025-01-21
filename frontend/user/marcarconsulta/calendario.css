@@ -1,0 +1,89 @@
+
+
+body {
+    background-color: #f4f4f4;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+}
+
+.calendar .day {
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.calendar .day:hover {
+    background-color: #f0f0f0;
+    color: black;
+}
+
+.calendar .day.selected {
+    background-color: #4CAF50;
+    color: white;
+}
+
+/* */
+.calendar .day.disabled {
+    background-color: #8d8d8d;
+    cursor: not-allowed;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    font-weight: bold;
+}
+
+.weekdays div {
+    padding: 5px;
+}
+
+.month-nav, .year-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.month-nav select, .year-nav select {
+    width: 150px;
+    font-size: 1.2em;
+    background-color: transparent;
+    border: 2px solid #ddd;
+    padding: 5px;
+    text-align: center;
+    color: #ffffff;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.input-container {
+    margin-top: 15px;
+}
+
+.time-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.time-buttons .btn {
+    width: 80px;
+    margin: 5px;
+}
+
+.time-section {
+    margin-top: 20px;
+}
+
+.section-title {
+    font-weight: bold;
+}

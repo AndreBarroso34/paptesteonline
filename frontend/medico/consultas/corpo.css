@@ -1,0 +1,17 @@
+:root{
+    --cor-btn-verde : #95bb3b;
+    --cor-btn-verde-escuro: rgb(2, 94, 2);
+    --sombra-fundo: 0 10px 20px rgba(0, 0, 0, 0.5); /* Sombra do fundo */
+    --background-color: rgb(26, 26, 26);
+    --cor-texto-branco: rgb(255, 255, 255);
+}
+
+body{
+    font-family: Arial, sans-serif;
+    background-color: var(--background-color);
+}
+
+th,
+td{
+    color: var(--cor-texto-branco);
+}

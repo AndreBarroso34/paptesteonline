@@ -1,0 +1,220 @@
+/* Import do tipo de letra Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Corpo do site */
+body {
+    font-family: 'Poppins';
+    background-color: #1a1a1a;
+    color: white;
+    min-height: 100vh;
+}
+
+/* class que pertente ao corpo inteiro */
+.container {
+    padding: 2%;
+    
+    margin: 0 auto;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 48px;
+    padding-right: 20px;
+}
+
+.btns-header{
+    display: flex;
+    justify-content: center; /* Centraliza o conjunto */
+    gap: 20px; /* Espaçamento fixo entre os itens */
+    align-items: center;
+}
+/* -------- Menu ----------*/
+.menu{
+    margin-right: 100px;
+    margin-bottom: 90px;
+    display: flex;
+    justify-content: center; /* Centraliza o conjunto */
+    gap: 40px; /* Espaçamento fixo entre os itens */
+    align-items: center;
+    
+}
+.menu-secondario{
+    display: flex;
+    justify-content: center; /* Centraliza o conjunto */
+    gap: 40px; /* Espaçamento fixo entre os itens */
+    align-items: center;
+}
+
+/* Estilo para o menu */
+nav.menu {
+    display: flex;
+    justify-content: center; /* Centraliza o botão no menu */
+    padding: 10px 20px; /* Espaçamento ao redor do menu */
+}
+
+/* Estilo para o botão */
+nav.menu-secondario a {
+    text-decoration: none; /* Remove o sublinhado */
+    color: #fff; /* Cor do texto */
+    background-color: #28a745; /* Cor verde do botão */
+    padding: 10px 20px; /* Espaçamento interno do botão */
+    border-radius: 5px; /* Bordas arredondadas */
+    font-size: 16px; /* Tamanho da fonte */
+    font-weight: bold; /* Deixa o texto em negrito */
+    border: none; /* Remove a borda */
+}
+
+/* Estilo para hover */
+nav.menu a:hover {
+    background-color: #218838; /* Verde mais escuro ao passar o mouse */
+}
+
+/*--------- Logo -------------*/
+.logo {
+    width: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/*------- BTN -----------*/
+
+
+.btn {
+    padding: 9px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: #65a30d;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #4d7c0f;
+}
+
+.btn-secondary {
+    background-color: #f3f4f6;
+    color: #1a1a1a;
+}
+
+.btn-secondary:hover {
+    background-color: #a1a3a7;
+}
+
+/* Main content styles */
+.main-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1px;
+    margin-top: 80px;
+}
+
+.text-content {
+    flex: 1;
+    margin-left: 12 0px;
+}
+
+h1 {
+    font-size: 70px;
+    margin-bottom: 16px;
+}
+
+.company-name {
+    color: #65a30d;
+    display: block;
+    margin-top: 8px;
+    margin-left: 80px;
+}
+
+.illustration {
+    flex: 1;
+    height: 256px;
+    background-color: #dbeafe;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+
+
+
+
+
+
+
+.botaomarcar {
+    margin-left: 30%;
+    margin-top: 10%;
+}
+
+a{
+    color: white;
+    text-decoration: none;
+    font-size: 20px;
+}
+
+
+/* Estilo para o menu */
+nav.menu {
+    display: flex;
+    justify-content: center; /* Centraliza o botão no menu */
+    padding: 10px 20px; /* Espaçamento ao redor do menu */
+}
+
+/* Estilo para o botão */
+nav.menu-secondario a {
+    text-decoration: none; /* Remove o sublinhado */
+    color: #fff; /* Cor do texto */
+    background-color: #28a745; /* Cor verde do botão */
+    padding: 10px 20px; /* Espaçamento interno do botão */
+    border-radius: 5px; /* Bordas arredondadas */
+    font-size: 16px; /* Tamanho da fonte */
+    font-weight: bold; /* Deixa o texto em negrito */
+    border: none; /* Remove a borda */
+}
+
+/* Estilo para hover */
+nav.menu a:hover {
+    background-color: #218838; /* Verde mais escuro ao passar o mouse */
+}
+
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column; 
+        text-align: center;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .illustration {
+        width: 100%;
+    }
+}

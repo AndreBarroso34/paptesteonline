@@ -1,0 +1,33 @@
+// Endpoint para criar novo usuário
+app.post('/signup', (req, res) => {
+    const { nome, sobrenomes, telefone, email, data_nascimento, pass } = req.body;
+    
+    console.log({
+        nome: localStorage.getItem('nome'),
+        sobrenomes: localStorage.getItem('sobrenomes'),
+        email: localStorage.getItem('email'),
+        telefone: localStorage.getItem('telefone'),
+        data_nascimento: localStorage.getItem('data_nascimento'),
+        pass: this.password
+    });
+
+    // Verificar se todos os campos são fornecidos
+    if (!nome || !sobrenomes || !telefone || !email || !data_nascimento || !pass) {
+        console.log('Erro: Campos obrigatórios não preenchidos');
+        return res.status(400).json({ success: false, message: 'Todos os campos são obrigatórios.' });
+    }
+
+    // Consulta SQL para inserir o novo usuário
+    const query = `INSERT INTO users (nome, sobrenomes, telefone, email, pass, data_nascimento, is_admin, data_criacao)
+                   VALUES (?, ?, ?, ?, ?, 0, NOW())`;
+
+    db.execute(query, [nome, sobrenomes, telefone, email, pass, data_nascimento], (err, results) => {
+        if (err) {
+            console.error('Erro ao criar usuário:', err);
+            return res.status(500).json({ success: false, message: 'Erro ao criar conta' });
+        }
+
+        console.log('Usuário criado com sucesso:', results);
+        res.status(200).json({ success: true, message: 'Conta criada com sucesso!' });
+    });
+});

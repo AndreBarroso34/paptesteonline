@@ -1,0 +1,143 @@
+/* Import do tipo de letra Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+:root{
+    --cor-btn-verde : #95bb3b;
+    --cor-btn-verde-escuro: rgb(2, 94, 2);
+    --sombra-fundo: 0 10px 20px rgba(0, 0, 0, 0.5); /* Sombra do fundo */
+    --background-color: rgb(26, 26, 26)
+}
+
+*{
+    background-color: var(--background-color);
+    font-family: 'Poppins';/* Tipo de letra */
+
+}
+
+.logo{
+    margin-left: 50px;
+    margin-top: 30px;
+    height: 5px;
+   
+}
+.folha-logo{
+    width: 120px;
+}
+
+.logo-welldentys{
+    width: 150px;
+}
+.countainer{
+    display: flex; /* Ativa o Flexbox */
+    justify-content: center; /* Centraliza horizontalmente */
+    margin-top: 10px;
+}
+p,
+h1{
+    color: white;/* Cor de letra*/
+    font-weight: normal;/* Letra fica sem o negrito */
+}
+
+p{
+    display: flex;               /* Usar Flexbox */
+    flex-direction: column;      /* Organizar os itens em coluna */
+    align-items: flex-start;
+}
+
+.titulo{
+    display: flex; /* Ativa o Flexbox */
+    justify-content: center; /* Centraliza horizontalmente */
+    font-size: 35px;
+}
+
+.login-btn{
+    margin-top: 20px;
+    color: white;   
+    border: none;
+    padding: 10px 150px;
+    
+    text-decoration: none;
+    background-color: var(--cor-btn-verde);
+    border-radius: 10px;
+}
+
+.login-btn:hover{
+    background-color: var(--cor-btn-verde-escuro);
+}
+
+.btn-login{
+    margin-top: 10%;
+    display: flex; /* Ativa o Flexbox */
+    justify-content: center; /* Centraliza horizontalmente */
+}
+
+
+.input {
+    background-color: transparent; /* Fundo transparente */
+    color: #ffffff; /* Cor do texto branca */
+    border: 1px solid #ffffff; /* Borda branca */
+    border-radius: 10px; /* Bordas arredondadas */
+    padding: 10px; /* Ajusta o padding para não ser exagerado */
+    font-size: 16px; /* Tamanho da fonte */
+    outline: none; /* Remove o contorno padrão ao focar */
+    text-align: center; /* Centraliza o texto */
+    width: 100%; /* Faz com que o input ocupe toda a largura disponível */
+    transition: all 0.3s ease; /* Animação suave para efeitos */
+}
+  
+.input::placeholder {
+    color: #cccccc; /* Cor do placeholder */
+}
+  
+
+
+.ainda-nao-tem-conta{
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;       /* Coloca os itens em linha */
+    justify-content: flex-start; /* Alinha os itens à esquerda */
+    align-items: center;       /* Alinha verticalmente no centro */
+    gap: 10px;                 /* Adiciona espaçamento entre os elementos */
+    text-align: left; 
+    text-decoration: none;
+}
+
+.ainda-nao-tem-conta a {
+    text-decoration: none; /* Remove o sublinhado */
+    color: var(--cor-btn-verde); /* Aplica a cor verde definida na variável */
+
+
+}
+.ainda-nao-tem-conta{
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Espaço entre os links */
+}
+
+.ainda-nao-tem-conta a:hover {
+    color: var(--cor-btn-verde-escuro); /* Altera a cor quando passar o mouse */
+    text-decoration: none; /* Garante que o sublinhado não apareça ao passar o mouse */
+}
+
+
+
+
+.form {
+    display: flex;
+    flex-direction: column; /* Organiza os itens em coluna */
+    align-items: center; /* Centraliza horizontalmente */
+}
+
+.form p {
+    align-self: flex-start; /* Faz o <p> ficar alinhado ao início do <input> */
+    margin-bottom: 5px; /* Espaçamento entre o <p> e o <input> */
+}
+
+.formularios {
+    background-color: var(--cor-fundo-formulario); /* Fundo preto */
+    padding: 60px 120px; /* Espaçamento interno */
+    border-radius: 45px; /* Bordas arredondadas */
+    box-shadow: var(--sombra-fundo); /* Adiciona sombra */
+    text-align: center; /* Centraliza o texto */
+    width: 350px; /* Largura fixa */
+}

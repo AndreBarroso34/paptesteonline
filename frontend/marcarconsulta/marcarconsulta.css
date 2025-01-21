@@ -1,0 +1,4 @@
+.container {
+    display: flex; /* Coloca os elementos lado a lado */
+    gap: 10px; /* Espaçamento entre os itens */
+}

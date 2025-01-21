@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <a href="../paginainicial/paginaInicial.html"  >
+                <img src="../IMG/LOGOS/logo_lab.png" alt="Logo da Welldentys" class="logo-welldentys">
+            </a>
+        </div>
+    </header>
+    
+    <div id="app" class="countainer">
+        <div class="formularios" id="formulario">
+            <div class="img-logo">
+                <a href="../index.html">
+                    <img src="../../IMG/LOGOS/folha-logo.png" alt="" class="folha-logo">  
+                </a>
+            </div>
+            <div class="titulo">
+                <h1>Login</h1>
+            </div>
+            <div class="formulario">
+                <div class="form">
+                    <!-- Mensagem de erro -->
+                    <p v-if="errorMessage" style="color: red; text-align: center;">{{ errorMessage }}</p>
+                    <p>Insira o seu email</p>
+                    <input type="email" v-model="email" placeholder="Email" required class="input">
+                    <p>Insira sua palavra-passe</p>
+                    <input type="password" v-model="password" placeholder="Password" required class="input">
+                    
+                    <div class="btn-login">
+                        <button class="login-btn" @click="handleLogin">Continuar</button>
+                    </div>
+                    <div class="ainda-nao-tem-conta">
+                        <a href="../signup/signup.html">Ainda não tenho conta</a>
+
+                    </div>
+                </div>    
+            </div>
+        </div>
+        
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                email: '',
+                password: '',
+                errorMessage: ''
+            },
+            methods: {
+                async handleLogin() {
+                    this.errorMessage = '';  // Limpa mensagens anteriores
+        
+                    // Validação simples no frontend
+                    if (!this.email || !this.password) {
+                        this.errorMessage = 'Por favor, preencha todos os campos.';
+                        return;
+                    }
+        
+                    try {
+                        // Chama o endpoint de login no backend
+                        const response = await fetch('http://localhost:3001/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: this.email, password: this.password }),
+                        });
+        
+                        const result = await response.json();
+        
+                        // Tratamento da resposta do servidor
+                        if (response.ok && result.success) {
+                            // Armazena dados no localStorage
+                            localStorage.setItem('userName', result.nome);   // Armazena o nome
+                            localStorage.setItem('email', result.email);     // Armazena o email
+                            localStorage.setItem('telefone', result.telefone);  // Armazena o telefone
+        
+                            // Redireciona com base no tipo de utilizador
+                            if (result.role === 'medico') {
+                                window.location.href = `../medico/Paginainicial/paginainicial.html?nome=${encodeURIComponent(result.nome)}`;
+                            } else if (result.role === 'user') {
+                                window.location.href = `../user/paginainicial/paginainicial.html?nome=${encodeURIComponent(result.nome)}`;
+                            } else if (result.role === 'assistente') {
+                                window.location.href = `../assistentes/Paginainicial2/checklogin.html?nome=${encodeURIComponent(result.nome)}`;
+                            } else {
+                                this.errorMessage = 'Tipo de utilizador não reconhecido.';
+                            }
+                        } else {
+                            this.errorMessage = result.message || 'Credenciais inválidas.';
+                        }
+                    } catch (error) {
+                        console.error('Erro ao conectar ao servidor:', error);
+                        this.errorMessage = 'Erro ao conectar ao servidor. Verifica a tua ligação.';
+                    }
+                }
+            }
+        });
+    </script>
+    
+</body>
+</html>
+

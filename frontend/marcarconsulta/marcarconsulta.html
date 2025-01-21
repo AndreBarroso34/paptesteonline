@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Consultas</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .appointments-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .appointments-table th, 
+        .appointments-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .appointments-table th {
+            background-color: #f4f4f4;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-new {
+            background-color: #4CAF50;
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .btn-delete {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .status-select {
+            padding: 4px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <div>
+                <input type="date" v-model="selectedDate">
+                <button class="btn btn-new" @click="showNewAppointmentForm">
+                    Nova Consulta
+                </button>
+            </div>
+            <div>
+                <h2>Dr. {{ doctorName }}</h2>
+            </div>
+        </div>
+
+        <table class="appointments-table">
+            <thead>
+                <tr>
+                    <th>Estado</th>
+                    <th>Paciente</th>
+                    <th>Tit</th>
+                    <th>Hora</th>
+                    <th>Tel</th>
+                    <th>Convênio</th>
+                    <th>Obs_Importante</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="appointment in sortedAppointments" :key="appointment.id">
+                    <td>
+                        <select v-model="appointment.status" class="status-select" 
+                                @change="updateStatus(appointment)">
+                            <option value="marcada">Marcada</option>
+                            <option value="desmarcada">Desmarcada</option>
+                        </select>
+                    </td>
+                    <td>{{ appointment.patientName }}</td>
+                    <td>{{ appointment.title }}</td>
+                    <td>{{ appointment.time }}</td>
+                    <td>{{ appointment.phone }}</td>
+                    <td>{{ appointment.insurance }}</td>
+                    <td>{{ appointment.notes }}</td>
+                    <td>
+                        <button class="btn btn-delete" @click="deleteAppointment(appointment.id)">
+                            Remover
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Modal para Nova Consulta -->
+        <div v-if="showModal" class="modal">
+            <div class="modal-content">
+                <h3>Nova Consulta</h3>
+                <form @submit.prevent="saveAppointment">
+                    <input type="text" v-model="newAppointment.patientName" placeholder="Nome do Paciente" required>
+                    <input type="text" v-model="newAppointment.title" placeholder="Título">
+                    <input type="time" v-model="newAppointment.time" required>
+                    <input type="tel" v-model="newAppointment.phone" placeholder="Telefone">
+                    <input type="text" v-model="newAppointment.insurance" placeholder="Convênio">
+                    <textarea v-model="newAppointment.notes" placeholder="Observações"></textarea>
+                    <button type="submit" class="btn btn-new">Salvar</button>
+                    <button type="button" class="btn" @click="showModal = false">Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    doctorName: '',
+                    selectedDate: new Date().toISOString().split('T')[0],
+                    appointments: [],
+                    showModal: false,
+                    newAppointment: {
+                        patientName: '',
+                        title: '',
+                        time: '',
+                        phone: '',
+                        insurance: '',
+                        notes: ''
+                    }
+                }
+            },
+            computed: {
+                sortedAppointments() {
+                    return [...this.appointments].sort((a, b) => {
+                        return a.time.localeCompare(b.time);
+                    });
+                }
+            },
+            methods: {
+                loadAppointments() {
+                    // Aqui você fará a chamada ao seu banco de dados
+                    fetch(`/api/appointments?date=${this.selectedDate}&doctorId=${this.doctorId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            this.appointments = data;
+                        })
+                        .catch(error => console.error('Erro:', error));
+                },
+                updateStatus(appointment) {
+                    // Atualizar status no banco de dados
+                    fetch(`/api/appointments/${appointment.id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ status: appointment.status })
+                    })
+                    .catch(error => console.error('Erro:', error));
+                },
+                deleteAppointment(id) {
+                    if (confirm('Tem certeza que deseja remover esta consulta?')) {
+                        fetch(`/api/appointments/${id}`, {
+                            method: 'DELETE'
+                        })
+                        .then(() => {
+                            this.loadAppointments();
+                        })
+                        .catch(error => console.error('Erro:', error));
+                    }
+                },
+                showNewAppointmentForm() {
+                    this.showModal = true;
+                },
+                saveAppointment() {
+                    // Salvar nova consulta no banco de dados
+                    fetch('/api/appointments', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            ...this.newAppointment,
+                            date: this.selectedDate,
+                            doctorId: this.doctorId
+                        })
+                    })
+                    .then(() => {
+                        this.showModal = false;
+                        this.loadAppointments();
+                        this.newAppointment = {
+                            patientName: '',
+                            title: '',
+                            time: '',
+                            phone: '',
+                            insurance: '',
+                            notes: ''
+                        };
+                    })
+                    .catch(error => console.error('Erro:', error));
+                }
+            },
+            mounted() {
+                // Recuperar informações do médico do localStorage após o login
+                this.doctorName = localStorage.getItem('doctorName');
+                this.doctorId = localStorage.getItem('doctorId');
+                this.loadAppointments();
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
